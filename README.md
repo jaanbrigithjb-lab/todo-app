@@ -35,8 +35,9 @@ git commit -m "first commit"
 # Add remote origin
 git remote add origin https://github.com/jaanbrigithjb-lab/todo-app.git
 
-# Rename the branch to main
+# If Send Files Another Branch Rename the branch to main
 git branch -M main
 
 # Push the changes to the remote repository
 git push -u origin main
+# Updated README
