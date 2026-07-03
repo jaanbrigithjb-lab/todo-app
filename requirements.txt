@@ -1,0 +1,9 @@
+# requirements.txt
+# FastAPI: The web framework we are using
+fastapi==0.104.1
+# Uvicorn: ASGI server to run FastAPI
+uvicorn[standard]==0.24.0
+# Pydantic: Data validation (already included with FastAPI)
+# pytest: For running our unit tests in CI
+pytest==7.4.3
+# httpx: For TestClient (included with FastAPI)

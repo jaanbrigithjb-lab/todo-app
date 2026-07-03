@@ -1,0 +1,119 @@
+				DevOps Notes
+				
+Concept 1: What is DevOps:
+			The DevOps is Automation of developer files and Fix The Errors.
+			
+			eg: In Restaurant a chief(Dev-Developer) is is not only cooking but also personally sharing a food to customer and cleans the table if it dirty.
+			
+Concept 2: Version Control (Git):
+			Git is used to change GitHub entire folder project, allowing thousand of developers to edit same files without overwriting each other.
+			
+			cmd:
+				echo "My App" > readme.txt
+				git add readme.txt
+				git commit -m "Start My Journey"
+				
+Concept 3: Containerization (Docker):
+			Docker wraps your code, its python version, and its system settings into a sealed "Lunchbox" that runs Identically on your System, your boss's mac, and the giant cloud server.
+			
+Create a Dockerfile:
+				FROM python:3.10		# The base box
+				COPY app.py .			# Put your code in side
+				CMD ["python", "app.py"]	# Run it
+				
+bash:
+	docker build -t my_box .	# <--- Build the image and change any name to my_box image.
+	docker run my_box 		# <--- Run the container.
+
+Output:
+	Hello from docker!  <--- In Python File(app.py)
+	
+Summary:
+	* docker build reads the Dockerfile and creates an image named my_box.
+	* docker run starts a container from that image and executes "python app.py".
+	
+Concept 4: Continuous Integration(CI):
+				* A CI Pipeline that automatically downloads or builds your code, runs your tests, and judges if your code is "good enough" every single time you hit "git push". 
+				* CI merges and tests frequently.
+				
+YAML(Github Actions - .github/workflows/ci.yml):
+						name: CI Pipeline	# Name of the workflow
+						on: [push]	# Trigger: On every code push and pull request
+						jobs:		# Groups of steps to run
+						  test:		# Job identifier 
+						    runs-on: ubuntu-latest	# Runner OS
+						    steps:	# Sequence of Actions
+						      _ uses: actions/checkout@v4	# step 1: check out the repository code
+						      - run: python -m pytest	# The Robot Runs your tests!
+						
+Concept 5: Continuous Deployment(CD):
+				* Automatically after CI passes - deploy to staging for manual approval or directly to production.
+				* CD deploys automatically to staging/production.
+				
+Concept 6: Orchesytation(Kubernetes/K8s):
+				* Kubernetes is a Ship Captain that manages thousands of Docker "Lunchbox", ensuring that if one box sinks (crashes), the captain instanly launches new one.
+				
+YAML (Save as deploy.yaml):	
+				apiVersion: apps/v1
+				kind: Deployement
+				spec:
+				  replicas: 3		# "Captain, always keep 3 copies alive!"
+				  template:
+				    spec:
+				      containers:
+				      - name: my_app
+				        image: my_box	# Use the Docker box we built earlier
+				        
+Concept 7: Infrastructure as Code (Terraform):
+					* Writing code (not clicking buttons) to create your servers, Database, and networks, so you can "re-build" your entire company's server setup in 5 minutes if a fire breaks out.
+					
+HCL (Save as main.tf):
+		  	resource "aws_instance" "server" {	# Declare an EC2 instance resource
+		  	   ami		 = "ami-12345"		# Amazon Machine Image ID 
+		  	   instance_type = "t2.micro"		# Instance size
+		  	}
+	    cmd:
+		terraform apply
+		
+Concept 8: Configuration Management (Ansible):
+					  * Configuration Management (Ansible) automates server setup, software installation, and configuration across multiple machines. it ensures all servers are in desired, consistent states.
+				
+YAML 	(setup.yml):
+		- name: Install Web Server
+		  hosts: all
+		  tasks:
+		    - name: Install Nginx
+		      apt:
+		        name: nginx
+		        state: present
+		        
+Concept 9: Monitoring (Prometheus & Grafana):
+					* Prometheus: An open-source monitoring system & time-series database that collects and stores metrics (CPU, memory,request rates,etc.) as labelled data
+					* Grafana: A Visualization and analytics platform that queries Prometheus (and other data sources) to build dashboard, graphs, and alerts.
+		
+Flask Health Check	(health.py):
+					@app.route(/health')
+					def health():
+						return "OK"
+						
+Concept 10: DevSecOps (Security):
+			     * DevSecOps integrates security practices into DevOps pipelines - automated scanning, compliance checks, and policy enforcement at every stage (code, build, deploy, runtime).
+			     
+ddd this to your CI: 		
+			cmd:
+				semgrep --config p/owasp-top-ten .	# Scans your code for owasp vulnerability instantly
+				
+Concept 11: Observability (Logs & Traces):
+					* The Ability to ask "Why is my app slow?" and instantly search through every log and API request to find the exact line of code that is taking 5 seconds to load.
+					
+Concept 12: Cloud Computing (AWS/Azure/GCP):
+					* Renting Computers, hard drives, and network cables over the internet instead of buying physical hardware for your office.
+					
+					
+
+Memorize These 5 Truths:
+		* 1. If it is manual, it is wrong. (Automate Everything).
+		* 2. Always version your code. (Never leave a file without git commit).
+		* 3. Test early, test often. (Catch the bug now, not at 2pm).
+		* 4. Use Docker. (if you don't use container, yu are working in the Stone Age).
+		* 5. Infrastructure is Code. (Never click "Create Server" in a web UI; write terraform instead).

@@ -1,0 +1,86 @@
+# .github/workflows/ci-cd.yml
+# CONCEPT 1: Version Control - This file lives in Git
+# CONCEPT 3: CI - Automated testing on every push
+# CONCEPT 4: CD - Automated deployment when tests pass
+# CONCEPT 5: DevSecOps - Security scanning
+
+# name: The name that appears in the GitHub Actions UI
+name: To-Do App CI/CD Pipeline
+
+# on: Defines when this workflow should run
+# push: Triggers when code is pushed to the repository
+# branches: Only run for the 'main' branch
+on:
+  push:
+    branches: [ "main" ]
+
+# jobs: A workflow consists of one or more jobs
+jobs:
+  # ---- CONCEPT 3: CI JOB ----
+  # This job runs tests and security scans
+  build-and-test:
+    # runs-on: The type of virtual machine to run on
+    runs-on: ubuntu-latest
+
+    # steps: The sequence of commands to execute
+    steps:
+      # Step 1: CONCEPT 1 (Git) - Download the code
+      # uses: Uses a pre-made GitHub Action
+      # actions/checkout@v4: Checks out your repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: CONCEPT 3 (CI) - Setup Python
+      # actions/setup-python@v5: Installs Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # Step 3: CONCEPT 3 (CI) - Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest semgrep
+
+      # Step 4: CONCEPT 5 (DevSecOps) - Security Scan
+      # semgrep: A static analysis tool that finds security vulnerabilities
+      # --config p/owasp-top-ten: Use the OWASP Top 10 ruleset
+      # --error: Fail the build if any errors are found
+      - name: Run Semgrep Security Scan
+        run: semgrep --config p/owasp-top-ten app/ --error
+
+      # Step 5: CONCEPT 3 (CI) - Run Tests
+      # pytest: Runs all test files in the tests/ directory
+      - name: Run Pytest
+        run: pytest tests/ -v
+
+      # Step 6: CONCEPT 2 (Docker) - Build the image
+      # This ensures our Dockerfile is valid
+      - name: Build Docker Image
+        run: docker build -t todo-app .
+
+  # ---- CONCEPT 4: CD JOB ----
+  # This job deploys the application
+  # needs: This job waits for 'build-and-test' to complete successfully
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    # Only run on the main branch
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      # Step 1: CONCEPT 1 (Git) - Download the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: CONCEPT 2 (Docker) - Build the final image
+      - name: Build Docker Image for Deployment
+        run: docker build -t todo-app .
+
+      # Step 3: CONCEPT 4 (CD) - Trigger Render.com Deploy
+      # We use a webhook URL stored as a GitHub Secret
+      # RENDER_DEPLOY_HOOK: A secret URL that triggers Render to deploy
+      - name: Trigger Render Deploy
+        run: |
+          curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
