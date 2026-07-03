@@ -18,23 +18,25 @@ sudo docker stop my-todo
 # Remove the container
 sudo docker rm my-todo
 
+# Verson Control Git
 
-
-
-#
+# Initialize Git
 git init
 
-#
+# set user name and email
 git config user.name "money_d_luffy" && git config user.email "money_d_luffy@MonkeyDLuffy.local"
 
-#
+# Add all files to the staging area
+git add .
+
+# Commit the changes
 git commit -m "first commit"
 
-#
+# Add remote origin
 git remote add origin https://github.com/jaanbrigithjb-lab/todo-app.git
 
-#
+# Rename the branch to main
 git branch -M main
 
-#
+# Push the changes to the remote repository
 git push -u origin main
