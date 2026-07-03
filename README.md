@@ -25,6 +25,9 @@ sudo docker rm my-todo
 git init
 
 #
+git config user.name "money_d_luffy" && git config user.email "money_d_luffy@MonkeyDLuffy.local"
+
+#
 git commit -m "first commit"
 
 #
