@@ -11,8 +11,10 @@ import json
 from datetime import datetime
 # logging: Python's built-in logging library.
 import logging
+# CORSMiddleware: For Cross-Origin Resource Sharing.
+from fastapi.middleware.cors import CORSMiddleware
 # BaseModel: For request/response validation.
-from .models import TodoCreate, TodoResponse
+from .models import TodoCreate, TodoResponse, TodoUpdate
 
 # --- CONCEPT 7: OBSERVABILITY (Structured Logging) ---
 # Why: Plain text logs are hard to search. JSON logs are machine-readable.
@@ -50,6 +52,16 @@ app = FastAPI(
     title="Simple To-Do API",
     description="A basic to-do list with full DevOps pipeline",
     version="1.0.0"
+)
+
+# Enable CORS (Cross-Origin Resource Sharing)
+# This allows the React frontend to communicate with this API from a different origin.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # In-memory database (simulated). 
@@ -211,6 +223,42 @@ def delete_todo(todo_id: int):
     
     # If not found, raise 404
     logger.error(f"Todo with ID {todo_id} not found for deletion")
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Todo with ID {todo_id} not found"
+    )
+
+# --- BUSINESS LOGIC: Patch a To-Do ---
+@app.patch("/todos/{todo_id}", response_model=TodoResponse)
+def patch_todo(todo_id: int, todo_update: TodoUpdate):
+    """
+    Partially update a todo item (e.g., toggle completed status, update title/description).
+    
+    Args:
+        todo_id: The ID of the todo to update.
+        todo_update: The fields to update.
+        
+    Returns:
+        The updated todo item.
+    """
+    logger.info(f"Attempting to patch todo ID: {todo_id}")
+    
+    # Find the todo
+    for i, todo in enumerate(todos_db):
+        if todo["id"] == todo_id:
+            # Update only the fields that are sent
+            if todo_update.title is not None:
+                todos_db[i]["title"] = todo_update.title
+            if todo_update.description is not None:
+                todos_db[i]["description"] = todo_update.description
+            if todo_update.completed is not None:
+                todos_db[i]["completed"] = todo_update.completed
+                
+            logger.info(f"Todo {todo_id} patched successfully")
+            return todos_db[i]
+            
+    # If not found, raise 404
+    logger.error(f"Todo with ID {todo_id} not found for patching")
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Todo with ID {todo_id} not found"

@@ -1,43 +1,78 @@
-# Build the Docker image
-# -t: Tag the image with a name (todo-app)
-# .: Use the Dockerfile in the current directory
-sudo docker build -t todo-app .
+# TaskFlow: DevOps To-Do Application
 
-# Run the container
-# -p: Map port 8000 on your computer to port 8000 in the container
-# -d: Run in detached mode (background)
-# --name: Give the container a name
-sudo docker run -d -p 8000:8000 --name my-todo todo-app
+A modern, responsive, and containerized To-Do application built with a FastAPI backend and a React (Vite) frontend. This project is configured with full Docker support and is ready for DevOps deployment pipelines.
 
-# Test it: Open your browser and go to http://localhost:8000/docs
-# You'll see the interactive Swagger documentation!
+---
 
-# Stop the container
-sudo docker stop my-todo
+## Tech Stack
+*   **Backend:** Python 3.10, FastAPI, Pydantic (data contracts), Uvicorn (ASGI server)
+*   **Frontend:** React 19, Vite, Vanilla CSS (Glassmorphism design system), Lucide React (icons)
+*   **DevOps:** Docker, Docker Compose, GitHub Actions CI/CD
 
-# Remove the container
-sudo docker rm my-todo
+---
 
-# Verson Control Git
+## Project Structure
+```
+├── Backend/              # FastAPI Backend project
+│   ├── app/              # Application logic (main.py, models.py)
+│   ├── tests/            # Pytest test suite
+│   ├── Dockerfile        # Container configuration
+│   └── requirements.txt  # Python dependencies
+├── frontend/             # React (Vite) Frontend project
+│   ├── src/              # React source files
+│   ├── Dockerfile        # Production multi-stage Docker build
+│   └── package.json      # Node.js dependencies
+└── docker-compose.yml    # Root Docker Compose orchestrating both services
+```
 
-# Initialize Git
-git init
+---
 
-# set user name and email
-git config user.name "money_d_luffy" && git config user.email "money_d_luffy@MonkeyDLuffy.local"
+## Running the App with Docker Compose (Recommended)
 
-# Add all files to the staging area
-git add .
+The easiest way to start the entire stack (both backend and frontend) is using Docker Compose:
 
-# Commit the changes
-git commit -m "first commit"
+```bash
+# Build and start all services in detached mode
+sudo docker compose up -d --build
+```
 
-# Add remote origin
-git remote add origin https://github.com/jaanbrigithjb-lab/todo-app.git
+*   **Frontend:** Open `http://localhost:3000`
+*   **Backend API:** Running on `http://localhost:8000`
+*   **Interactive API Docs (Swagger UI):** Open `http://localhost:8000/docs`
 
-# If Send Files Another Branch Rename the branch to main
-git branch -M main
+```bash
+# Stop the containers
+sudo docker compose down
+```
 
-# Push the changes to the remote repository
-git push -u origin main
-# Updated README
+---
+
+## Local Development (Manual Mode)
+
+### 1. Running the Backend
+Navigate to the `Backend` directory.
+
+```bash
+cd Backend
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the FastAPI server
+python -m uvicorn app.main:app --reload
+```
+The backend API will run on `http://localhost:8000`.
+
+### 2. Running the Frontend
+Navigate to the `frontend` directory.
+
+```bash
+cd frontend
+
+# Install package dependencies
+npm install
+
+# Start the Vite development server
+npm run dev
+```
+The frontend will run on `http://localhost:5173`. Open this URL in your browser.

@@ -38,3 +38,20 @@ def test_get_nonexistent_todo():
     """Test that getting a non-existent todo returns 404."""
     response = client.get("/todos/99999")
     assert response.status_code == 404
+
+def test_patch_todo():
+    """Test that we can patch a todo (e.g. toggle completed status)."""
+    # Create a todo first
+    create_response = client.post("/todos/", json={"title": "Patch Test", "description": "To be patched"})
+    todo_id = create_response.json()["id"]
+    
+    # Patch completed status
+    patch_response = client.patch(f"/todos/{todo_id}", json={"completed": True})
+    assert patch_response.status_code == 200
+    assert patch_response.json()["completed"] is True
+    
+    # Patch title
+    patch_response_2 = client.patch(f"/todos/{todo_id}", json={"title": "Updated Title"})
+    assert patch_response_2.status_code == 200
+    assert patch_response_2.json()["title"] == "Updated Title"
+    assert patch_response_2.json()["completed"] is True # should preserve completed status

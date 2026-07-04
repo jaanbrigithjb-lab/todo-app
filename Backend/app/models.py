@@ -1,11 +1,17 @@
 # app/models.py
 from pydantic import BaseModel
+from typing import Optional
 
 # Concept: This is a "Data Contract". 
 # It ensures that when a user sends us data, it has the correct shape.
 class TodoCreate(BaseModel):
     title: str  # Required field. Must be a string.
     description: str = ""  # Optional field. Defaults to empty string.
+
+class TodoUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    completed: Optional[bool] = None
 
 class TodoResponse(BaseModel):
     id: int

@@ -1,0 +1,27 @@
+# Create a todo
+curl -X POST https://todo-app.onrender.com/todos/ \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Learn DevOps", "description": "Complete the entire course"}'
+
+# List all todos
+curl https://todo-app.onrender.com/todos/
+
+# Get a specific todo
+curl https://todo-app.onrender.com/todos/1
+
+# Delete a todo
+curl -X DELETE https://todo-app.onrender.com/todos/1
+
+# update a todo
+curl -X PATCH https://todo-app.onrender.com/todos/1 \
+  -H "Content-Type: application/json" \
+  -d '{"completed": true}'
+
+
+# Testing the CI/CD pipeline
+echo "# Updated README" >> README.md
+git add .
+git commit -m "Testing the CI/CD pipeline"
+git push    
+
+
